@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <style>
 :root{
   --yellow:#F6B90A; --yellow-deep:#B8790A; --ink:#221C10; --plum:#3E1750; --plum-deep:#2C0F3A;
@@ -364,6 +365,15 @@ footer ul a:hover{color:#fff;}
   var body=document.body, toggle=document.getElementById('navToggle');
   if(toggle){
     toggle.addEventListener('click', function(){ body.classList.toggle('mnav-open'); });
+  }
+})();
+(function(){
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on('init', function(user){});
+    window.netlifyIdentity.on('login', function(){
+      document.location.href = '/admin-login.html';
+    });
+    window.netlifyIdentity.init();
   }
 })();
 </script>
