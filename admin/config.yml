@@ -52,6 +52,7 @@ collections:
         label: "Fees & Payment Details"
         name: "fees"
         fields:
+          - {label: "Creche Fee (per term)", name: "creche", widget: "string"}
           - {label: "Nursery Fee (per term)", name: "nursery", widget: "string"}
           - {label: "Primary Fee (per term)", name: "primary", widget: "string"}
           - {label: "Secondary Fee (per term)", name: "secondary", widget: "string"}
