@@ -397,9 +397,13 @@ footer ul a:hover{color:#fff;}
 (function(){
   if (window.netlifyIdentity) {
     window.netlifyIdentity.on('init', function(user){});
-    window.netlifyIdentity.on('login', function(){
-      document.location.href = '/admin-login.html';
-    });
+    var hash = window.location.hash || '';
+    var isAuthLink = hash.indexOf('invite_token') !== -1 || hash.indexOf('recovery_token') !== -1 || hash.indexOf('confirmation_token') !== -1;
+    if (isAuthLink) {
+      window.netlifyIdentity.on('login', function(){
+        window.location.href = '/admin-login.html';
+      });
+    }
     window.netlifyIdentity.init();
   }
 })();
