@@ -411,17 +411,23 @@ footer ul a:hover{color:#fff;}
   }
 })();
 (function(){
-  if (window.netlifyIdentity) {
-    window.netlifyIdentity.on('init', function(user){});
-    var hash = window.location.hash || '';
-    var isAuthLink = hash.indexOf('invite_token') !== -1 || hash.indexOf('recovery_token') !== -1 || hash.indexOf('confirmation_token') !== -1;
-    if (isAuthLink) {
-      window.netlifyIdentity.on('login', function(){
-        window.location.href = '/admin-login.html';
-      });
-    }
-    window.netlifyIdentity.init();
+  if (!window.netlifyIdentity) return;
+
+  var hash = window.location.hash || '';
+
+  var isAuthLink =
+    hash.indexOf('invite_token=') !== -1 ||
+    hash.indexOf('recovery_token=') !== -1 ||
+    hash.indexOf('confirmation_token=') !== -1 ||
+    hash.indexOf('email_change_token=') !== -1 ||
+    hash.indexOf('access_token=') !== -1;
+
+  if (isAuthLink) {
+    window.location.replace('/Admin-login.html' + hash);
+    return;
   }
+
+  window.netlifyIdentity.init();
 })();
 </script>
 </body>
