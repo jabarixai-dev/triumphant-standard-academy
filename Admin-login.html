@@ -250,30 +250,51 @@ footer ul a:hover{color:#fff;}
     </div>
   </div>
   <script>
-    if (window.netlifyIdentity) {
-      var loggedOut = document.getElementById('identityLoggedOut');
-      var loggedIn = document.getElementById('identityLoggedIn');
-      var welcome = document.getElementById('welcomeMsg');
+  if (window.netlifyIdentity) {
+    var loggedOut = document.getElementById('identityLoggedOut');
+    var loggedIn = document.getElementById('identityLoggedIn');
+    var welcome = document.getElementById('welcomeMsg');
 
-      function showUser(user){
-        loggedOut.style.display = 'none';
-        loggedIn.style.display = 'block';
-        welcome.textContent = 'Signed in as ' + (user.user_metadata && user.user_metadata.full_name ? user.user_metadata.full_name : user.email);
-      }
-      function showLoggedOut(){
-        loggedOut.style.display = 'block';
-        loggedIn.style.display = 'none';
-      }
-
-      netlifyIdentity.on('init', function(user){ if(user) showUser(user); });
-      netlifyIdentity.on('login', function(user){ showUser(user); });
-      netlifyIdentity.on('logout', function(){ showLoggedOut(); });
-
-      document.getElementById('loginBtn').addEventListener('click', function(){ netlifyIdentity.open('login'); });
-      document.getElementById('logoutBtn').addEventListener('click', function(){ netlifyIdentity.logout(); });
-
-      netlifyIdentity.init();
+    function showUser(user){
+      loggedOut.style.display = 'none';
+      loggedIn.style.display = 'block';
+      welcome.textContent = 'Signed in as ' +
+        (user.user_metadata && user.user_metadata.full_name
+          ? user.user_metadata.full_name
+          : user.email);
     }
+
+    function showLoggedOut(){
+      loggedOut.style.display = 'block';
+      loggedIn.style.display = 'none';
+    }
+
+    netlifyIdentity.on('init', function(user){
+      if(user) showUser(user);
+    });
+
+    netlifyIdentity.on('login', function(user){
+      showUser(user);
+    });
+
+    netlifyIdentity.on('logout', function(){
+      showLoggedOut();
+    });
+
+    document.getElementById('loginBtn').addEventListener('click', function(){
+      netlifyIdentity.open('login');
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', function(){
+      netlifyIdentity.logout();
+    });
+
+    netlifyIdentity.on('error', function(err){
+      console.error('Netlify Identity error:', err);
+    });
+
+    netlifyIdentity.init();
+  }
   </script>
 </body>
 </html>
