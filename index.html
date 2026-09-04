@@ -405,27 +405,24 @@ footer ul a:hover{color:#fff;}
   </footer>
 <script>
 (function(){
-  var body=document.body, toggle=document.getElementById('navToggle');
+  var body = document.body;
+  var toggle = document.getElementById('navToggle');
+
   if(toggle){
-    toggle.addEventListener('click', function(){ body.classList.toggle('mnav-open'); });
+    toggle.addEventListener('click', function(){
+      body.classList.toggle('mnav-open');
+    });
   }
 })();
+
 (function(){
   if (!window.netlifyIdentity) return;
 
-  var hash = window.location.hash || '';
-
-  var isAuthLink =
-    hash.indexOf('invite_token=') !== -1 ||
-    hash.indexOf('recovery_token=') !== -1 ||
-    hash.indexOf('confirmation_token=') !== -1 ||
-    hash.indexOf('email_change_token=') !== -1 ||
-    hash.indexOf('access_token=') !== -1;
-
-  if (isAuthLink) {
-    window.location.replace('/Admin-login.html' + hash);
-    return;
-  }
+  window.netlifyIdentity.on('init', function(user) {
+    if (user) {
+      console.log('Netlify Identity initialized:', user.email);
+    }
+  });
 
   window.netlifyIdentity.init();
 })();
