@@ -361,8 +361,9 @@ footer ul a:hover{color:#fff;}
 })();
 
 (function(){
-  var FALLBACK = {"nursery":"\u20a6 00,000","primary":"\u20a6 00,000","secondary":"\u20a6 00,000","bank_name":"[Bank name]","account_name":"Triumphant Standard Academy","account_number":"0000000000"};
+  var FALLBACK = {"creche":"\u20a6 00,000", "nursery":"\u20a6 00,000","primary":"\u20a6 00,000","secondary":"\u20a6 00,000","bank_name":"[Bank name]","account_name":"Triumphant Standard Academy","account_number":"0000000000"};
   function apply(data){
+    document.getElementById('feeCreche').textContent = data.creche || '';
     document.getElementById('feeNursery').textContent = data.nursery || '';
     document.getElementById('feePrimary').textContent = data.primary || '';
     document.getElementById('feeSecondary').textContent = data.secondary || '';
