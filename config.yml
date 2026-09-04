@@ -1,0 +1,60 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
+collections:
+  - name: "news"
+    label: "News & Updates"
+    files:
+      - file: "content/news.json"
+        label: "News Items"
+        name: "news"
+        fields:
+          - label: "Articles"
+            name: "items"
+            widget: "list"
+            summary: "{{title}} — {{date}}"
+            fields:
+              - {label: "Title", name: "title", widget: "string"}
+              - {label: "Date", name: "date", widget: "string", hint: "e.g. Sep 2026"}
+              - label: "Category"
+                name: "category"
+                widget: "select"
+                options: ["Announcements", "Events", "Academic", "Sports"]
+              - {label: "Excerpt", name: "excerpt", widget: "text"}
+
+  - name: "gallery"
+    label: "Gallery"
+    files:
+      - file: "content/gallery.json"
+        label: "Gallery Photos"
+        name: "gallery"
+        fields:
+          - label: "Photos"
+            name: "items"
+            widget: "list"
+            summary: "{{caption}}"
+            fields:
+              - {label: "Caption", name: "caption", widget: "string"}
+              - label: "Category"
+                name: "category"
+                widget: "select"
+                options: ["campus", "academics", "events", "sports"]
+              - {label: "Photo", name: "image", widget: "image", required: false, hint: "Leave blank to keep the placeholder color tile"}
+
+  - name: "fees"
+    label: "School Fees"
+    files:
+      - file: "content/fees.json"
+        label: "Fees & Payment Details"
+        name: "fees"
+        fields:
+          - {label: "Nursery Fee (per term)", name: "nursery", widget: "string"}
+          - {label: "Primary Fee (per term)", name: "primary", widget: "string"}
+          - {label: "Secondary Fee (per term)", name: "secondary", widget: "string"}
+          - {label: "Bank Name", name: "bank_name", widget: "string"}
+          - {label: "Account Name", name: "account_name", widget: "string"}
+          - {label: "Account Number", name: "account_number", widget: "string"}
