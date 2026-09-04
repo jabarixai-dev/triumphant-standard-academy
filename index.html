@@ -416,15 +416,27 @@ footer ul a:hover{color:#fff;}
 })();
 
 (function(){
-  if (!window.netlifyIdentity) return;
+  if (window.netlifyIdentity) {
 
-  window.netlifyIdentity.on('init', function(user) {
-    if (user) {
-      console.log('Netlify Identity initialized:', user.email);
+    window.netlifyIdentity.on('init', function(user){
+      // Identity initialized
+    });
+
+    var hash = window.location.hash || '';
+
+    var isAuthLink =
+      hash.indexOf('invite_token') !== -1 ||
+      hash.indexOf('recovery_token') !== -1 ||
+      hash.indexOf('confirmation_token') !== -1;
+
+    if (isAuthLink) {
+      window.netlifyIdentity.on('login', function(){
+        window.location.href = '/admin-login.html';
+      });
     }
-  });
 
-  window.netlifyIdentity.init();
+    window.netlifyIdentity.init();
+  }
 })();
 </script>
 </body>
