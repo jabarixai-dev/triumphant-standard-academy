@@ -2,6 +2,38 @@ import { getStore } from "@netlify/blobs";
 
 const store = getStore("tsa-content");
 
+async function getUser(request) {
+  const auth = request.headers.get("authorization") || "";
+
+  if (!auth.startsWith("Bearer ")) {
+    return null;
+  }
+
+  const origin = new URL(request.url).origin;
+
+  const response = await fetch(`${origin}/.netlify/identity/user`, {
+    headers: {
+      Authorization: auth
+    }
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  return response.json();
+}
+
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store"
+    }
+  });
+}
+
 export default async (request) => {
   try {
     const url = new URL(request.url);
@@ -9,17 +41,8 @@ export default async (request) => {
 
     if (request.method === "GET") {
       if (section) {
-        const data = await store.get(section, { type: "json" });
-
-        return new Response(
-          JSON.stringify(data || {}),
-          {
-            status: 200,
-            headers: {
-              "Content-Type": "application/json",
-              "Cache-Control": "no-cache"
-            }
-          }
+        return json(
+          (await store.get(section, { type: "json" })) || {}
         );
       }
 
@@ -29,96 +52,64 @@ export default async (request) => {
         store.get("fees", { type: "json" })
       ]);
 
-      return new Response(
-        JSON.stringify({
-          news: news || {},
-          gallery: gallery || {},
-          fees: fees || {}
-        }),
-        {
-          status: 200,
-          headers: {
-            "Content-Type": "application/json",
-            "Cache-Control": "no-cache"
-          }
-        }
-      );
+      return json({
+        news: news || {},
+        gallery: gallery || {},
+        fees: fees || {}
+      });
     }
 
     if (request.method === "POST") {
-      const body = await request.json();
+      const user = await getUser(request);
 
-      if (!body.section || body.data === undefined) {
-        return new Response(
-          JSON.stringify({
-            error: "section and data are required"
-          }),
-          {
-            status: 400,
-            headers: {
-              "Content-Type": "application/json"
-            }
-          }
+      if (!user) {
+        return json(
+          { error: "Unauthorized. Please log in." },
+          401
         );
       }
 
-      const allowedSections = ["news", "gallery", "fees"];
+      const body = await request.json();
+
+      const allowedSections = [
+        "news",
+        "gallery",
+        "fees"
+      ];
+
+      if (!body.section || body.data === undefined) {
+        return json(
+          { error: "section and data are required" },
+          400
+        );
+      }
 
       if (!allowedSections.includes(body.section)) {
-        return new Response(
-          JSON.stringify({
-            error: "Invalid section"
-          }),
-          {
-            status: 400,
-            headers: {
-              "Content-Type": "application/json"
-            }
-          }
+        return json(
+          { error: "Invalid section" },
+          400
         );
       }
 
       await store.setJSON(body.section, body.data);
 
-      return new Response(
-        JSON.stringify({
-          success: true,
-          section: body.section
-        }),
-        {
-          status: 200,
-          headers: {
-            "Content-Type": "application/json"
-          }
-        }
-      );
+      return json({
+        success: true,
+        section: body.section
+      });
     }
 
-    return new Response(
-      JSON.stringify({
-        error: "Method not allowed"
-      }),
-      {
-        status: 405,
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }
+    return json(
+      { error: "Method not allowed" },
+      405
     );
 
   } catch (error) {
     console.error(error);
 
-    return new Response(
-      JSON.stringify({
-        error: "Internal server error"
-      }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }
+    return json(
+      { error: "Internal server error" },
+      500
     );
   }
 };
