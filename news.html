@@ -372,7 +372,7 @@ footer ul a:hover{color:#fff;}
       });
     });
   }
-  fetch('/content/news.json').then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(renderNews).catch(function(){ renderNews(FALLBACK); });
+  fetch('/.netlify/functions/content?section=news').then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(renderNews).catch(function(){ renderNews(FALLBACK); });
 })();
 </script>
 </body>
