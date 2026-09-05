@@ -371,7 +371,7 @@ footer ul a:hover{color:#fff;}
     document.getElementById('bankAccountName').textContent = data.account_name || '';
     document.getElementById('bankAccountNumber').textContent = data.account_number || '';
   }
-  fetch('/content/fees.json').then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(apply).catch(function(){ apply(FALLBACK); });
+  fetch('/.netlify/functions/content?section=fees').then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(apply).catch(function(){ apply(FALLBACK); });
 })();
 </script>
 </body>
