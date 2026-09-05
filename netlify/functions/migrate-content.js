@@ -27,63 +27,29 @@ const content = {
         title: "Cultural Day celebration",
         date: "Mar 2026",
         category: "Events",
-        excerpt: "Pupils celebrated Nigeria's rich cultural heritage with performances and exhibition."
+        excerpt: "Pupils celebrated Nigeria's rich cultural heritage with performances and exhibitions."
+      },
+      {
+        title: "New term resumption notice",
+        date: "Feb 2026",
+        category: "Announcements",
+        excerpt: "Parents and guardians are reminded of the new term resumption date and preparations for the academic term."
       }
     ]
   },
 
   gallery: {
     items: [
-      {
-        caption: "Main School Building",
-        category: "campus",
-        image: ""
-      },
-      {
-        caption: "Our Campus",
-        category: "campus",
-        image: ""
-      },
-      {
-        caption: "Students in Class",
-        category: "academics",
-        image: ""
-      },
-      {
-        caption: "Graduation Ceremony",
-        category: "events",
-        image: ""
-      },
-      {
-        caption: "Sports Day Activities",
-        category: "sports",
-        image: ""
-      },
-      {
-        caption: "Cultural Festival",
-        category: "events",
-        image: ""
-      },
-      {
-        caption: "School Library",
-        category: "campus",
-        image: ""
-      },
-      {
-        caption: "Classroom Activities",
-        category: "academics",
-        image: ""
-      },
-      {
-        caption: "Inter-School Football",
-        category: "sports",
-        image: ""
-      },
-      {
-        caption: "Annual Prize-Giving Day",
-        category: "events",
-        image: ""
-      }
+      { caption: "Main School Building", category: "campus", image: "" },
+      { caption: "Our Campus", category: "campus", image: "" },
+      { caption: "Students in Class", category: "academics", image: "" },
+      { caption: "Graduation Ceremony", category: "events", image: "" },
+      { caption: "Sports Day Activities", category: "sports", image: "" },
+      { caption: "Cultural Festival", category: "events", image: "" },
+      { caption: "School Library", category: "campus", image: "" },
+      { caption: "Classroom Activities", category: "academics", image: "" },
+      { caption: "Inter-School Football", category: "sports", image: "" },
+      { caption: "Annual Prize-Giving Day", category: "events", image: "" }
     ]
   },
 
