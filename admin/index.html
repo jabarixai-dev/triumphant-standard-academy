@@ -1,24 +1,655 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Content Manager — Triumphant Standard Academy</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" href="data:,">
-</head>
-<body>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TSA Admin Dashboard</title>
+
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-  <script>
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", function(user) {
-        if (!user) {
-          window.netlifyIdentity.on("login", function() {
-            document.location.href = "/admin/";
-          });
-        }
-      });
+
+  <style>
+    * {
+      box-sizing: border-box;
     }
-  </script>
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      color: #222;
+    }
+
+    header {
+      background: #111;
+      color: white;
+      padding: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 7px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .logout {
+      background: #c9a227;
+      color: #111;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .login-box {
+      max-width: 450px;
+      margin: 100px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 3px 15px rgba(0,0,0,.1);
+    }
+
+    .login-btn,
+    .save-btn,
+    .add-btn {
+      background: #b30000;
+      color: white;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .tabs button {
+      background: #ddd;
+      color: #111;
+    }
+
+    .tabs button.active {
+      background: #b30000;
+      color: white;
+    }
+
+    .panel {
+      display: none;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .item {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .edit-btn {
+      background: #111;
+      color: white;
+    }
+
+    .delete-btn {
+      background: #b30000;
+      color: white;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 12px;
+      margin-bottom: 5px;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .form-actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .cancel-btn {
+      background: #ddd;
+    }
+
+    .status {
+      margin: 15px 0;
+      padding: 10px;
+      border-radius: 7px;
+      display: none;
+    }
+
+    .status.show {
+      display: block;
+    }
+
+    .gallery-image {
+      max-width: 160px;
+      max-height: 110px;
+      object-fit: cover;
+      border-radius: 7px;
+      margin-top: 8px;
+    }
+
+    .empty {
+      padding: 20px;
+      text-align: center;
+      color: #777;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .container {
+        padding: 12px;
+      }
+
+      .panel {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="loginScreen" class="login-box">
+  <h2>Triumphant Standard Academy</h2>
+  <p>Admin Content Dashboard</p>
+  <button class="login-btn" onclick="login()">Login</button>
+</div>
+
+<div id="app" style="display:none;">
+
+  <header>
+    <h1>TSA Admin Dashboard</h1>
+    <button class="logout" onclick="logout()">Logout</button>
+  </header>
+
+  <div class="container">
+
+    <div class="tabs">
+      <button class="active" onclick="showTab('news', this)">News</button>
+      <button onclick="showTab('gallery', this)">Gallery</button>
+      <button onclick="showTab('fees', this)">Fees</button>
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <!-- NEWS -->
+    <section id="news" class="panel active">
+      <h2>News</h2>
+      <button class="add-btn" onclick="newNews()">+ Add News</button>
+
+      <div id="newsList"></div>
+
+      <div id="newsForm" style="display:none;">
+        <hr>
+
+        <h3>Edit News</h3>
+
+        <input type="hidden" id="newsIndex">
+
+        <label>Title</label>
+        <input id="newsTitle">
+
+        <label>Date</label>
+        <input id="newsDate" placeholder="Aug 2026">
+
+        <label>Category</label>
+        <input id="newsCategory" placeholder="Announcements">
+
+        <label>Excerpt</label>
+        <textarea id="newsExcerpt"></textarea>
+
+        <div class="form-actions">
+          <button class="save-btn" onclick="saveNews()">Save News</button>
+          <button class="cancel-btn" onclick="cancelNews()">Cancel</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section id="gallery" class="panel">
+      <h2>Gallery</h2>
+      <button class="add-btn" onclick="newGallery()">+ Add Gallery Item</button>
+
+      <div id="galleryList"></div>
+
+      <div id="galleryForm" style="display:none;">
+        <hr>
+
+        <h3>Edit Gallery Item</h3>
+
+        <input type="hidden" id="galleryIndex">
+
+        <label>Caption</label>
+        <input id="galleryCaption">
+
+        <label>Category</label>
+        <input id="galleryCategory">
+
+        <label>Image URL</label>
+        <input id="galleryImage" placeholder="https://example.com/image.jpg">
+
+        <div class="form-actions">
+          <button class="save-btn" onclick="saveGallery()">Save Gallery Item</button>
+          <button class="cancel-btn" onclick="cancelGallery()">Cancel</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEES -->
+    <section id="fees" class="panel">
+      <h2>School Fees</h2>
+
+      <label>Creche</label>
+      <input id="feeCreche">
+
+      <label>Nursery</label>
+      <input id="feeNursery">
+
+      <label>Primary</label>
+      <input id="feePrimary">
+
+      <label>Junior Secondary</label>
+      <input id="feeJss">
+
+      <label>Senior Secondary</label>
+      <input id="feeSss">
+
+      <label>Admission Fee</label>
+      <input id="feeAdmission">
+
+      <label>Payment Information</label>
+      <textarea id="feePayment"></textarea>
+
+      <div class="form-actions">
+        <button class="save-btn" onclick="saveFees()">Save Fees</button>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+  let data = {
+    news: [],
+    gallery: [],
+    fees: {}
+  };
+
+  function login() {
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.open();
+    }
+  }
+
+  function logout() {
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.logout();
+    }
+  }
+
+  function showApp() {
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    loadData();
+  }
+
+  function showLogin() {
+    document.getElementById("loginScreen").style.display = "block";
+    document.getElementById("app").style.display = "none";
+  }
+
+  function showStatus(message, success = true) {
+    const box = document.getElementById("status");
+    box.textContent = message;
+    box.style.background = success ? "#d9f7df" : "#ffdede";
+    box.style.color = success ? "#155724" : "#721c24";
+    box.classList.add("show");
+
+    setTimeout(() => box.classList.remove("show"), 3000);
+  }
+
+  async function loadData() {
+    try {
+      const response = await fetch("/.netlify/functions/content");
+
+      if (!response.ok) {
+        throw new Error("Could not load content");
+      }
+
+      data = await response.json();
+
+      renderNews();
+      renderGallery();
+      renderFees();
+
+    } catch (error) {
+      console.error(error);
+      showStatus("Could not load content.", false);
+    }
+  }
+
+  async function saveSection(section) {
+    const user = window.netlifyIdentity.currentUser();
+
+    if (!user) {
+      showStatus("Please log in again.", false);
+      return;
+    }
+
+    const token = user.token && user.token.access_token;
+
+    if (!token) {
+      showStatus("Login session expired. Please log in again.", false);
+      return;
+    }
+
+    try {
+      const response = await fetch("/.netlify/functions/content", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({
+          section: section,
+          data: data[section]
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Save failed");
+      }
+
+      showStatus("Saved successfully!");
+    } catch (error) {
+      console.error(error);
+      showStatus(error.message, false);
+    }
+  }
+
+  function showTab(id, button) {
+    document.querySelectorAll(".panel").forEach(panel => {
+      panel.classList.remove("active");
+    });
+
+    document.querySelectorAll(".tabs button").forEach(btn => {
+      btn.classList.remove("active");
+    });
+
+    document.getElementById(id).classList.add("active");
+    button.classList.add("active");
+  }
+
+  // NEWS
+
+  function renderNews() {
+    const list = document.getElementById("newsList");
+
+    if (!data.news || data.news.length === 0) {
+      list.innerHTML = '<div class="empty">No news yet.</div>';
+      return;
+    }
+
+    list.innerHTML = data.news.map((item, index) => `
+      <div class="item">
+        <strong>${escapeHtml(item.title || "")}</strong>
+        <p>${escapeHtml(item.date || "")} • ${escapeHtml(item.category || "")}</p>
+        <p>${escapeHtml(item.excerpt || "")}</p>
+
+        <div class="item-actions">
+          <button class="edit-btn" onclick="editNews(${index})">Edit</button>
+          <button class="delete-btn" onclick="deleteNews(${index})">Delete</button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function newNews() {
+    document.getElementById("newsIndex").value = "";
+    document.getElementById("newsTitle").value = "";
+    document.getElementById("newsDate").value = "";
+    document.getElementById("newsCategory").value = "";
+    document.getElementById("newsExcerpt").value = "";
+
+    document.getElementById("newsForm").style.display = "block";
+  }
+
+  function editNews(index) {
+    const item = data.news[index];
+
+    document.getElementById("newsIndex").value = index;
+    document.getElementById("newsTitle").value = item.title || "";
+    document.getElementById("newsDate").value = item.date || "";
+    document.getElementById("newsCategory").value = item.category || "";
+    document.getElementById("newsExcerpt").value = item.excerpt || "";
+
+    document.getElementById("newsForm").style.display = "block";
+  }
+
+  function saveNews() {
+    const item = {
+      title: document.getElementById("newsTitle").value,
+      date: document.getElementById("newsDate").value,
+      category: document.getElementById("newsCategory").value,
+      excerpt: document.getElementById("newsExcerpt").value
+    };
+
+    const index = document.getElementById("newsIndex").value;
+
+    if (index === "") {
+      data.news.unshift(item);
+    } else {
+      data.news[Number(index)] = item;
+    }
+
+    renderNews();
+    cancelNews();
+    saveSection("news");
+  }
+
+  function deleteNews(index) {
+    if (!confirm("Delete this news item?")) return;
+
+    data.news.splice(index, 1);
+    renderNews();
+    saveSection("news");
+  }
+
+  function cancelNews() {
+    document.getElementById("newsForm").style.display = "none";
+  }
+
+  // GALLERY
+
+  function renderGallery() {
+    const list = document.getElementById("galleryList");
+
+    if (!data.gallery || data.gallery.length === 0) {
+      list.innerHTML = '<div class="empty">No gallery items yet.</div>';
+      return;
+    }
+
+    list.innerHTML = data.gallery.map((item, index) => `
+      <div class="item">
+        <strong>${escapeHtml(item.caption || "")}</strong>
+        <p>${escapeHtml(item.category || "")}</p>
+
+        ${item.image ? `<img class="gallery-image" src="${escapeAttr(item.image)}" alt="">` : ""}
+
+        <div class="item-actions">
+          <button class="edit-btn" onclick="editGallery(${index})">Edit</button>
+          <button class="delete-btn" onclick="deleteGallery(${index})">Delete</button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function newGallery() {
+    document.getElementById("galleryIndex").value = "";
+    document.getElementById("galleryCaption").value = "";
+    document.getElementById("galleryCategory").value = "";
+    document.getElementById("galleryImage").value = "";
+
+    document.getElementById("galleryForm").style.display = "block";
+  }
+
+  function editGallery(index) {
+    const item = data.gallery[index];
+
+    document.getElementById("galleryIndex").value = index;
+    document.getElementById("galleryCaption").value = item.caption || "";
+    document.getElementById("galleryCategory").value = item.category || "";
+    document.getElementById("galleryImage").value = item.image || "";
+
+    document.getElementById("galleryForm").style.display = "block";
+  }
+
+  function saveGallery() {
+    const item = {
+      caption: document.getElementById("galleryCaption").value,
+      category: document.getElementById("galleryCategory").value,
+      image: document.getElementById("galleryImage").value
+    };
+
+    const index = document.getElementById("galleryIndex").value;
+
+    if (index === "") {
+      data.gallery.unshift(item);
+    } else {
+      data.gallery[Number(index)] = item;
+    }
+
+    renderGallery();
+    cancelGallery();
+    saveSection("gallery");
+  }
+
+  function deleteGallery(index) {
+    if (!confirm("Delete this gallery item?")) return;
+
+    data.gallery.splice(index, 1);
+    renderGallery();
+    saveSection("gallery");
+  }
+
+  function cancelGallery() {
+    document.getElementById("galleryForm").style.display = "none";
+  }
+
+  // FEES
+
+  function renderFees() {
+    const fees = data.fees || {};
+
+    document.getElementById("feeCreche").value = fees.creche || "";
+    document.getElementById("feeNursery").value = fees.nursery || "";
+    document.getElementById("feePrimary").value = fees.primary || "";
+    document.getElementById("feeJss").value = fees.jss || "";
+    document.getElementById("feeSss").value = fees.sss || "";
+    document.getElementById("feeAdmission").value = fees.admission || "";
+    document.getElementById("feePayment").value = fees.payment || "";
+  }
+
+  function saveFees() {
+    data.fees = {
+      ...data.fees,
+      creche: document.getElementById("feeCreche").value,
+      nursery: document.getElementById("feeNursery").value,
+      primary: document.getElementById("feePrimary").value,
+      jss: document.getElementById("feeJss").value,
+      sss: document.getElementById("feeSss").value,
+      admission: document.getElementById("feeAdmission").value,
+      payment: document.getElementById("feePayment").value
+    };
+
+    saveSection("fees");
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function escapeAttr(value) {
+    return escapeHtml(value);
+  }
+
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", function(user) {
+      if (user) {
+        showApp();
+      } else {
+        showLogin();
+      }
+    });
+
+    window.netlifyIdentity.on("login", function() {
+      showApp();
+      window.netlifyIdentity.close();
+    });
+
+    window.netlifyIdentity.on("logout", function() {
+      showLogin();
+    });
+  }
+</script>
+
 </body>
-</html>
+  </html>
