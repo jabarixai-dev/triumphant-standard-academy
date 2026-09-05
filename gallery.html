@@ -376,7 +376,7 @@ footer ul a:hover{color:#fff;}
       });
     });
   }
-  fetch('/content/gallery.json').then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(renderGallery).catch(function(){ renderGallery(FALLBACK); });
+  fetch('/.netlify/functions/content?section=gallery').then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(renderGallery).catch(function(){ renderGallery(FALLBACK); });
 })();
 </script>
 </body>
